@@ -1,0 +1,12 @@
+schema:
+  - "graph/*.graphql"
+
+exec:
+  filename: graph/generated.go
+
+model:
+  filename: graph/models/model.go
+
+resolver:
+  filename: graph/resolvers/resolver.go
+  type: Resolver

@@ -1,0 +1,186 @@
+syntax = "proto3";
+option go_package="github.com/les-cours/organization-api/api/orgs";
+package orgs;
+
+
+
+
+message Empty {}
+
+
+//intituations
+
+
+message IDRequest {
+  string id = 1;
+  string userID = 2;
+}
+
+enum SCHOOLS {
+  school = 0;
+  middle = 1;
+  high = 2;
+}
+
+
+/*
+    DEPARTMENTS
+ */
+
+message Departments {
+  repeated Department departments = 1;
+}
+message Department {
+  string departmentID = 1;
+  string title = 2;
+  string arabicTitle = 3;
+  string  schools = 4;
+  string description = 5;
+  string  description_ar = 6;
+  Grads grades = 7;
+}
+message GetDepartmentsRequest{
+  string schoolID = 1;  // الطور [school - middle -high ]
+}
+message GetDepartmentRequest{
+  string departmentID = 1;
+}
+message DepartmentAddRequest {
+  string departmentID = 1;
+  string title = 2;
+  string arabicTitle = 3;
+  string  schools = 4;
+}
+message DepartmentUpdateRequest {
+  string departmentID = 1;
+  string title = 2;
+  string arabicTitle = 3;
+}
+message DeleteDepartmentsRequest {
+  string departmentID = 1;
+}
+message MultiDepartmentsDeleteRequest{
+  repeated string departmentsIDs = 1;
+}
+
+message Subjects {
+  repeated Subject subjects = 1;
+}
+
+message Teacher {
+  string teacherID = 2;
+  string username = 3;
+  string firstname = 5;
+  string lastname = 6;
+  string email = 7;
+}
+
+message Subject {
+  string subjectID = 1;
+  string title = 2;
+  string arabicTitle = 3;
+  repeated Grad grads = 4;
+  repeated Teacher teachers = 5;
+}
+
+
+message GetSubjectsRequest{
+  string gradID = 1;
+}
+
+message GetSubjectRequest{
+  string subjectID = 1;
+}
+
+message SubjectAddRequest {
+  string title = 1;
+  string arabicTitle = 2;
+  repeated string gradsIDs = 3;
+  repeated string teachersIDs = 4;
+}
+
+message SubjectUpdateRequest {
+  string subjectID = 1;
+  string title = 2;
+  string arabicTitle = 3;
+}
+message DeleteSubjectsRequest {
+  string subjectID = 1;
+}
+message MultiSubjectsDeleteRequest{
+  repeated string subjectsIDs = 1;
+}
+
+message GetSubjectByGradRequest {
+  string gradID = 1;
+}
+
+
+message Grads {
+  repeated Grad grads = 1;
+}
+message Grad {
+  string gradID = 1;
+  string title = 2;
+  string arabicTitle = 3;
+  Subjects subjects = 4;
+}
+message GetGradsRequest{
+  string departmentID = 1;
+}
+message GetGradRequest{
+  string gradID = 1;
+}
+message GradAddRequest {
+  string gradID = 1;
+  string title = 2;
+  string arabicTitle = 3;
+  string  departmentID = 4;
+}
+message GradUpdateRequest {
+  string gradID = 1;
+  string title = 2;
+  string arabicTitle = 3;
+}
+message DeleteGradRequest {
+  string gradID = 1;
+}
+message MultiGradDeleteRequest{
+  repeated string gradsIDs = 1;
+}
+
+
+message OperationStatus {
+  bool status = 1;
+}
+
+service OrgService {
+
+  rpc GetSchool(IDRequest) returns (Departments){}
+  rpc GetDepartments(GetDepartmentsRequest) returns (Departments) {}
+  rpc GetDepartment(GetDepartmentRequest) returns (Department) {}
+  rpc AddDepartment(DepartmentAddRequest) returns (Department) {}
+  rpc UpdateDepartment(DepartmentUpdateRequest) returns (Department) {}
+  rpc DeleteDepartment(DeleteDepartmentsRequest) returns (OperationStatus) {}
+  rpc DeleteDepartments(MultiDepartmentsDeleteRequest) returns (OperationStatus) {}
+
+  rpc GetSubjects(GetSubjectsRequest) returns (Subjects) {}
+  rpc GetSubject(GetSubjectRequest) returns (Subject) {}
+  rpc AddSubject(SubjectAddRequest) returns (Subject) {}
+  rpc UpdateSubject(SubjectUpdateRequest) returns (Subject) {}
+  rpc DeleteSubject(DeleteSubjectsRequest) returns (OperationStatus) {}
+  rpc DeleteSubjects(MultiSubjectsDeleteRequest) returns (OperationStatus) {}
+  rpc GetSubjectsByGrad(IDRequest) returns (Subjects) {}
+
+
+
+  rpc GetGrads(GetGradsRequest) returns (Grads) {}
+  rpc GetGrad(GetGradRequest) returns (Grad) {}
+  rpc AddGrad(GradAddRequest) returns (Grad) {}
+  rpc UpdateGrad(GradUpdateRequest) returns (Grad) {}
+  rpc DeleteGrad(DeleteGradRequest) returns (OperationStatus) {}
+  rpc DeleteGrads(MultiGradDeleteRequest) returns (OperationStatus) {}
+
+
+
+}

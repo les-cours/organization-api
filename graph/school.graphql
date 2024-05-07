@@ -1,0 +1,25 @@
+
+type Department {
+    departmentID: String!
+    title: String!
+    arabicTitle: String!
+    schools: String!
+    description: String!
+    description_ar: String!
+    grades: [Grad!]!
+}
+
+type Grad {
+    gradID: String!
+    title: String!
+    arabicTitle: String!
+    subjects: [Subject!]!
+}
+
+type Subject {
+    subjectID: String!
+    title: String!
+    arabicTitle: String!
+    grads: [Grad!]!
+}
+
