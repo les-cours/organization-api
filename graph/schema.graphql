@@ -9,10 +9,48 @@ type Mutation {
 
 type Query {
     school(schoolID : String!):[Department!]!
+    dashboard: Dashboard!
+    cities:[City!]!
 
 }
 
 
 type OperationStatus {
     succeeded: Boolean!
+}
+
+type City {
+    id: Int!
+    name: String!
+    name_ar: String!
+}
+
+type Dashboard {
+    recentApps: [App!]!
+    productViews: ProductViews!
+    productsBar: ProductsBar!
+    cashFlow: CashFlow!
+}
+
+type App {
+    id: ID!
+    name: String!
+    image: String!
+    description: String!
+}
+
+type ProductViews {
+    categories: [String]
+    products: [String]
+    views: [Int]
+}
+
+type ProductsBar {
+    labels: [String]
+    products: [String]
+}
+
+type CashFlow {
+    categories: [String]
+    cash: [Float]
 }

@@ -2,6 +2,31 @@
 
 package models
 
+type App struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Image       string `json:"image"`
+	Description string `json:"description"`
+}
+
+type CashFlow struct {
+	Categories []*string  `json:"categories,omitempty"`
+	Cash       []*float64 `json:"cash,omitempty"`
+}
+
+type City struct {
+	ID     int    `json:"id"`
+	Name   string `json:"name"`
+	NameAr string `json:"name_ar"`
+}
+
+type Dashboard struct {
+	RecentApps   []*App        `json:"recentApps"`
+	ProductViews *ProductViews `json:"productViews"`
+	ProductsBar  *ProductsBar  `json:"productsBar"`
+	CashFlow     *CashFlow     `json:"cashFlow"`
+}
+
 type Department struct {
 	DepartmentID  string  `json:"departmentID"`
 	Title         string  `json:"title"`
@@ -24,6 +49,17 @@ type Mutation struct {
 
 type OperationStatus struct {
 	Succeeded bool `json:"succeeded"`
+}
+
+type ProductViews struct {
+	Categories []*string `json:"categories,omitempty"`
+	Products   []*string `json:"products,omitempty"`
+	Views      []*int    `json:"views,omitempty"`
+}
+
+type ProductsBar struct {
+	Labels   []*string `json:"labels,omitempty"`
+	Products []*string `json:"products,omitempty"`
 }
 
 type Query struct {
