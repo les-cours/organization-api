@@ -109,9 +109,14 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Cities    func(childComplexity int) int
-		Dashboard func(childComplexity int) int
-		School    func(childComplexity int, schoolID string) int
+		Cities      func(childComplexity int) int
+		Dashboard   func(childComplexity int) int
+		Department  func(childComplexity int, departmentID string) int
+		Departments func(childComplexity int, schoolID string) int
+		Grad        func(childComplexity int, gradID string) int
+		Grads       func(childComplexity int, departmentID string) int
+		School      func(childComplexity int, schoolID string) int
+		Subjects    func(childComplexity int, gradID string) int
 	}
 
 	Subject struct {
@@ -127,6 +132,11 @@ type MutationResolver interface {
 }
 type QueryResolver interface {
 	School(ctx context.Context, schoolID string) ([]*models.Department, error)
+	Subjects(ctx context.Context, gradID string) ([]*models.Subject, error)
+	Grads(ctx context.Context, departmentID string) ([]*models.Grad, error)
+	Grad(ctx context.Context, gradID string) (*models.Grad, error)
+	Departments(ctx context.Context, schoolID string) ([]*models.Department, error)
+	Department(ctx context.Context, departmentID string) (*models.Department, error)
 	Dashboard(ctx context.Context) (*models.Dashboard, error)
 	Cities(ctx context.Context) ([]*models.City, error)
 }
@@ -386,6 +396,54 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Dashboard(childComplexity), true
 
+	case "Query.department":
+		if e.complexity.Query.Department == nil {
+			break
+		}
+
+		args, err := ec.field_Query_department_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Department(childComplexity, args["departmentID"].(string)), true
+
+	case "Query.departments":
+		if e.complexity.Query.Departments == nil {
+			break
+		}
+
+		args, err := ec.field_Query_departments_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Departments(childComplexity, args["SchoolID"].(string)), true
+
+	case "Query.grad":
+		if e.complexity.Query.Grad == nil {
+			break
+		}
+
+		args, err := ec.field_Query_grad_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Grad(childComplexity, args["gradID"].(string)), true
+
+	case "Query.grads":
+		if e.complexity.Query.Grads == nil {
+			break
+		}
+
+		args, err := ec.field_Query_grads_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Grads(childComplexity, args["departmentID"].(string)), true
+
 	case "Query.school":
 		if e.complexity.Query.School == nil {
 			break
@@ -397,6 +455,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.School(childComplexity, args["schoolID"].(string)), true
+
+	case "Query.subjects":
+		if e.complexity.Query.Subjects == nil {
+			break
+		}
+
+		args, err := ec.field_Query_subjects_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Subjects(childComplexity, args["gradID"].(string)), true
 
 	case "Subject.arabicTitle":
 		if e.complexity.Subject.ArabicTitle == nil {
@@ -580,6 +650,66 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_department_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["departmentID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("departmentID"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["departmentID"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_departments_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["SchoolID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("SchoolID"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["SchoolID"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_grad_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["gradID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gradID"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["gradID"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_grads_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["departmentID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("departmentID"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["departmentID"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_school_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -592,6 +722,21 @@ func (ec *executionContext) field_Query_school_args(ctx context.Context, rawArgs
 		}
 	}
 	args["schoolID"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_subjects_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["gradID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gradID"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["gradID"] = arg0
 	return args, nil
 }
 
@@ -2103,6 +2248,343 @@ func (ec *executionContext) fieldContext_Query_school(ctx context.Context, field
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_school_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_subjects(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_subjects(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Subjects(rctx, fc.Args["gradID"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*models.Subject)
+	fc.Result = res
+	return ec.marshalNSubject2ᚕᚖgithubᚗcomᚋlesᚑcoursᚋorganizationᚑapiᚋgraphᚋmodelsᚐSubjectᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_subjects(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "subjectID":
+				return ec.fieldContext_Subject_subjectID(ctx, field)
+			case "title":
+				return ec.fieldContext_Subject_title(ctx, field)
+			case "arabicTitle":
+				return ec.fieldContext_Subject_arabicTitle(ctx, field)
+			case "grads":
+				return ec.fieldContext_Subject_grads(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Subject", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_subjects_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_grads(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_grads(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Grads(rctx, fc.Args["departmentID"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*models.Grad)
+	fc.Result = res
+	return ec.marshalNGrad2ᚕᚖgithubᚗcomᚋlesᚑcoursᚋorganizationᚑapiᚋgraphᚋmodelsᚐGradᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_grads(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "gradID":
+				return ec.fieldContext_Grad_gradID(ctx, field)
+			case "title":
+				return ec.fieldContext_Grad_title(ctx, field)
+			case "arabicTitle":
+				return ec.fieldContext_Grad_arabicTitle(ctx, field)
+			case "subjects":
+				return ec.fieldContext_Grad_subjects(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Grad", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_grads_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_grad(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_grad(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Grad(rctx, fc.Args["gradID"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.Grad)
+	fc.Result = res
+	return ec.marshalNGrad2ᚖgithubᚗcomᚋlesᚑcoursᚋorganizationᚑapiᚋgraphᚋmodelsᚐGrad(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_grad(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "gradID":
+				return ec.fieldContext_Grad_gradID(ctx, field)
+			case "title":
+				return ec.fieldContext_Grad_title(ctx, field)
+			case "arabicTitle":
+				return ec.fieldContext_Grad_arabicTitle(ctx, field)
+			case "subjects":
+				return ec.fieldContext_Grad_subjects(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Grad", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_grad_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_departments(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_departments(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Departments(rctx, fc.Args["SchoolID"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*models.Department)
+	fc.Result = res
+	return ec.marshalNDepartment2ᚕᚖgithubᚗcomᚋlesᚑcoursᚋorganizationᚑapiᚋgraphᚋmodelsᚐDepartmentᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_departments(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "departmentID":
+				return ec.fieldContext_Department_departmentID(ctx, field)
+			case "title":
+				return ec.fieldContext_Department_title(ctx, field)
+			case "arabicTitle":
+				return ec.fieldContext_Department_arabicTitle(ctx, field)
+			case "schools":
+				return ec.fieldContext_Department_schools(ctx, field)
+			case "description":
+				return ec.fieldContext_Department_description(ctx, field)
+			case "description_ar":
+				return ec.fieldContext_Department_description_ar(ctx, field)
+			case "grades":
+				return ec.fieldContext_Department_grades(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Department", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_departments_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_department(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_department(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Department(rctx, fc.Args["departmentID"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.Department)
+	fc.Result = res
+	return ec.marshalNDepartment2ᚖgithubᚗcomᚋlesᚑcoursᚋorganizationᚑapiᚋgraphᚋmodelsᚐDepartment(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_department(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "departmentID":
+				return ec.fieldContext_Department_departmentID(ctx, field)
+			case "title":
+				return ec.fieldContext_Department_title(ctx, field)
+			case "arabicTitle":
+				return ec.fieldContext_Department_arabicTitle(ctx, field)
+			case "schools":
+				return ec.fieldContext_Department_schools(ctx, field)
+			case "description":
+				return ec.fieldContext_Department_description(ctx, field)
+			case "description_ar":
+				return ec.fieldContext_Department_description_ar(ctx, field)
+			case "grades":
+				return ec.fieldContext_Department_grades(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Department", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_department_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -4833,6 +5315,116 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "subjects":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_subjects(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "grads":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_grads(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "grad":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_grad(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "departments":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_departments(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "department":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_department(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "dashboard":
 			field := field
 
@@ -5435,6 +6027,10 @@ func (ec *executionContext) marshalNDashboard2ᚖgithubᚗcomᚋlesᚑcoursᚋor
 	return ec._Dashboard(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNDepartment2githubᚗcomᚋlesᚑcoursᚋorganizationᚑapiᚋgraphᚋmodelsᚐDepartment(ctx context.Context, sel ast.SelectionSet, v models.Department) graphql.Marshaler {
+	return ec._Department(ctx, sel, &v)
+}
+
 func (ec *executionContext) marshalNDepartment2ᚕᚖgithubᚗcomᚋlesᚑcoursᚋorganizationᚑapiᚋgraphᚋmodelsᚐDepartmentᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.Department) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -5487,6 +6083,10 @@ func (ec *executionContext) marshalNDepartment2ᚖgithubᚗcomᚋlesᚑcoursᚋo
 		return graphql.Null
 	}
 	return ec._Department(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNGrad2githubᚗcomᚋlesᚑcoursᚋorganizationᚑapiᚋgraphᚋmodelsᚐGrad(ctx context.Context, sel ast.SelectionSet, v models.Grad) graphql.Marshaler {
+	return ec._Grad(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNGrad2ᚕᚖgithubᚗcomᚋlesᚑcoursᚋorganizationᚑapiᚋgraphᚋmodelsᚐGradᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.Grad) graphql.Marshaler {

@@ -8,7 +8,13 @@ type Mutation {
 }
 
 type Query {
-    school(schoolID : String!):[Department!]!
+    school(schoolID: String!):[Department!]!
+    subjects(gradID: String!):[Subject!]!
+    grads(departmentID: String!):[Grad!]!
+    grad(gradID: String!):Grad!
+    departments(SchoolID: String!):[Department!]!
+    department(departmentID: String!):Department!
+#    MySubjects() //for teacher
     dashboard: Dashboard!
     cities:[City!]!
 
